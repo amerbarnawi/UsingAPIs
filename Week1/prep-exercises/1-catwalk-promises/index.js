@@ -2,140 +2,40 @@
 
 // First solution:
 
-
-let wait = false;
-let leftPosition = 0;
 const STEP_SIZE_PX = 10;
 const STEP_INTERVAL_MS = 50;
 const DANCE_TIME_MS = 5000;
 const DANCING_CAT_URL =
   'https://media1.tenor.com/images/2de63e950fb254920054f9bd081e8157/tenor.gif';
-const WALK_CAT_URL = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
-
-function walk(img, startPos, stopPos, centerPos) {
-  return new Promise((resolve) => {
-
-    leftPosition = startPos;
-
-    const walkInterval = setInterval(() => {
-
-      if ( wait === false) {
-          img.style.left = `${leftPosition}px`;
-          leftPosition += STEP_SIZE_PX;
-      }
-
-      if (leftPosition > centerPos -5 &&
-            leftPosition < centerPos + 5 && 
-            wait === false){
-
-              wait = true;
-
-              dance(img).then(() => {
-                wait = false;
-              });
-            }
-
-      if (leftPosition > stopPos){
-        resolve();  
-        clearInterval(walkInterval);   
-      }
-    }, STEP_INTERVAL_MS);
-    
-    // Resolve this promise when the cat (`img`) has walked from `startPos` to
-    // `stopPos`.
-    // Make good use of the `STEP_INTERVAL_PX` and `STEP_INTERVAL_MS`
-    // constants.
-  });
-}
-
-function dance(img) {
-  return new Promise((resolve) => {
-
-    img.src = DANCING_CAT_URL;
-
-    setTimeout(() => {
-      img.src = WALK_CAT_URL ;
-      resolve();
-    }, DANCE_TIME_MS);
-    // Switch the `.src` of the `img` from the walking cat to the dancing cat
-    // and, after a timeout, reset the `img` back to the walking cat. Then
-    // resolve the promise.
-    // Make good use of the `DANCING_CAT_URL` and `DANCE_TIME_MS` constants.
-  });
-}
-
-function catWalk() {
-  const img = document.querySelector('img');
-  const startPos = -img.width;
-  const centerPos = (window.innerWidth - img.width) / 2;
-  const stopPos = window.innerWidth;
-
-  walk(img, startPos, stopPos, centerPos).then(() => {
-    catWalk();
-  });
-
-  // Use the `walk()` and `dance()` functions to let the cat do the following:
-  // 1. Walk from `startPos` to `centerPos`.
-  // 2. Then dance for 5 secs.
-  // 3. Then walk from `centerPos` to `stopPos`.
-  // 4. Repeat the first three steps indefinitely.
-}
-
-window.addEventListener('load', catWalk);
-
-//===========================================================
-// Second solution:
-
-let wait = false;
-let leftPosition = 0;
-const STEP_SIZE_PX = 10;
-const STEP_INTERVAL_MS = 50;
-const DANCE_TIME_MS = 5000;
-const DANCING_CAT_URL =
-  'https://media1.tenor.com/images/2de63e950fb254920054f9bd081e8157/tenor.gif';
-const WALK_CAT_URL = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
+const WALKING_CAT_URL = "http://www.anniemation.com/clip_art/images/cat-walk.gif";
 
 function walk(img, startPos, stopPos) {
-
   return new Promise((resolve) => {
 
-  if (img.src === WALK_CAT_URL) {
+    let leftPosition = startPos;
 
-    img.style.left = `${leftPosition}px`;
+    const walking = setInterval(() => {
+      img.style.left = `${leftPosition}px`;
       
-    leftPosition = STEP_SIZE_PX + leftPosition;
-  
-    if (leftPosition > stopPos ){
+      leftPosition += STEP_SIZE_PX;
 
-             resolve();
-  
-  
-      // Resolve this promise when the cat (`img`) has walked from `startPos` to
-      // `stopPos`.
-      // Make good use of the `STEP_INTERVAL_PX` and `STEP_INTERVAL_MS`
-      // constants.
-   
-  }
-  }
-});
+      if (leftPosition > stopPos){
+        resolve();
+        clearInterval(walking);
+      }
+    }, STEP_INTERVAL_MS);
+  });
 }
 
 function dance(img) {
-
-  wait = true;
   return new Promise((resolve) => {
 
     img.src = DANCING_CAT_URL;
 
     setTimeout(() => {
-      img.src = WALK_CAT_URL ;
+      img.src = WALKING_CAT_URL;
       resolve();
     }, DANCE_TIME_MS);
-
-    // Switch the `.src` of the `img` from the walking cat to the dancing cat
-    // and, after a timeout, reset the `img` back to the walking cat. Then
-    // resolve the promise.
-    // Make good use of the `DANCING_CAT_URL` and `DANCE_TIME_MS` constants.
   });
 }
 
@@ -144,37 +44,164 @@ function catWalk() {
   const startPos = -img.width;
   const centerPos = (window.innerWidth - img.width) / 2;
   const stopPos = window.innerWidth;
-  
 
-leftPosition = startPos;
-
-  setInterval(() => {
-
-    if (leftPosition  > centerPos - 5 && 
-        leftPosition < centerPos + 5 &&
-         wait === false) {
-
-          dance(img);
-
-        } else {
-          walk(img, startPos, stopPos).then(() => {
-            leftPosition = startPos;
-            wait = false;
-          });
-        }
-    
-
-  }, STEP_INTERVAL_MS);
-
-  
-   // Use the `walk()` and `dance()` functions to let the cat do the following:
-
-  // 1. Walk from `startPos` to `centerPos`.
-  // 2. Then dance for 5 secs.
-  // 3. Then walk from `centerPos` to `stopPos`.
-  // 4. Repeat the first three steps indefinitely.
+  walk(img, startPos, centerPos)
+    .then(() => dance(img))
+    .then(() => walk(img, centerPos, stopPos))
+    .then(() => catWalk()); 
 }
 
 window.addEventListener('load', catWalk);
+
+//=============================
+// Second solution:
+//=============================
+
+
+// let wait = false;
+// let leftPosition = 0;
+// const STEP_SIZE_PX = 10;
+// const STEP_INTERVAL_MS = 50;
+// const DANCE_TIME_MS = 5000;
+// const DANCING_CAT_URL =
+//   'https://media1.tenor.com/images/2de63e950fb254920054f9bd081e8157/tenor.gif';
+// const WALK_CAT_URL = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
+
+// function walk(img, startPos, stopPos, centerPos) {
+//   return new Promise((resolve) => {
+
+//     leftPosition = startPos;
+
+//     const walkInterval = setInterval(() => {
+
+//       if ( wait === false) {
+//           img.style.left = `${leftPosition}px`;
+//           leftPosition += STEP_SIZE_PX;
+//       }
+
+//       if (leftPosition > centerPos -5 &&
+//             leftPosition < centerPos + 5 && 
+//             wait === false){
+
+//               wait = true;
+
+//               dance(img).then(() => {
+//                 wait = false;
+//               });
+//             }
+
+//       if (leftPosition > stopPos){
+//         resolve();  
+//         clearInterval(walkInterval);   
+//       }
+//     }, STEP_INTERVAL_MS);
+    
+//   });
+// }
+
+// function dance(img) {
+//   return new Promise((resolve) => {
+
+//     img.src = DANCING_CAT_URL;
+
+//     setTimeout(() => {
+//       img.src = WALK_CAT_URL ;
+//       resolve();
+//     }, DANCE_TIME_MS);
+//   });
+// }
+
+// function catWalk() {
+//   const img = document.querySelector('img');
+//   const startPos = -img.width;
+//   const centerPos = (window.innerWidth - img.width) / 2;
+//   const stopPos = window.innerWidth;
+
+//   walk(img, startPos, stopPos, centerPos).then(() => {
+//     catWalk();
+//   });
+
+
+// }
+
+// window.addEventListener('load', catWalk);
+
+//===========================================================
+// Third solution:
+//==================================
+
+// let wait = false;
+// let leftPosition = 0;
+// const STEP_SIZE_PX = 10;
+// const STEP_INTERVAL_MS = 50;
+// const DANCE_TIME_MS = 5000;
+// const DANCING_CAT_URL =
+//   'https://media1.tenor.com/images/2de63e950fb254920054f9bd081e8157/tenor.gif';
+// const WALK_CAT_URL = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
+
+// function walk(img, startPos, stopPos) {
+
+//   return new Promise((resolve) => {
+
+//   if (img.src === WALK_CAT_URL) {
+
+//     img.style.left = `${leftPosition}px`;
+      
+//     leftPosition = STEP_SIZE_PX + leftPosition;
+  
+//     if (leftPosition > stopPos ){
+
+//              resolve();
+   
+//   }
+//   }
+// });
+// }
+
+// function dance(img) {
+
+//   wait = true;
+//   return new Promise((resolve) => {
+
+//     img.src = DANCING_CAT_URL;
+
+//     setTimeout(() => {
+//       img.src = WALK_CAT_URL ;
+//       resolve();
+//     }, DANCE_TIME_MS);
+
+//   });
+// }
+
+// function catWalk() {
+//   const img = document.querySelector('img');
+//   const startPos = -img.width;
+//   const centerPos = (window.innerWidth - img.width) / 2;
+//   const stopPos = window.innerWidth;
+  
+
+// leftPosition = startPos;
+
+//   setInterval(() => {
+
+//     if (leftPosition  > centerPos - 5 && 
+//         leftPosition < centerPos + 5 &&
+//          wait === false) {
+
+//           dance(img);
+
+//         } else {
+//           walk(img, startPos, stopPos).then(() => {
+//             leftPosition = startPos;
+//             wait = false;
+//           });
+//         }
+    
+
+//   }, STEP_INTERVAL_MS);
+
+// }
+
+// window.addEventListener('load', catWalk);
 
 //===============================================
